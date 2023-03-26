@@ -1,18 +1,19 @@
 package com.example.exambaha.services;
 
-import com.example.exambaha.controllers.ProjetController;
 import com.example.exambaha.entities.Projet;
-import com.example.exambaha.entities.Sprint;
-import com.example.exambaha.entities.User;
+import com.example.exambaha.entities.Role;
 import com.example.exambaha.repositories.ProjetRepository;
 import com.example.exambaha.repositories.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class IProjetServiceImp implements IProjetServices {
+
     @Autowired
     private ProjetRepository projetRepository;
     @Autowired
@@ -20,7 +21,7 @@ public class IProjetServiceImp implements IProjetServices {
 
     @Transactional
     @Override
-    public Projet addProject(Projet projet) {
+    public Projet addProjet(Projet projet) {
         if (projet.getSprintList()!=null) {
 
             projetRepository.saveAndFlush(projet);
@@ -39,5 +40,15 @@ public class IProjetServiceImp implements IProjetServices {
         //
         //return projetRepository.saveAndFlush(projet);//
 
+    }
+    @Transactional
+    @Override
+    public List<Projet> getAllCurrentProjet() {
+        return projetRepository.findAllBySprintsStartdateGreaterThan(LocalDate.now());
+    }
+
+    @Override
+    public List<Projet> getProjetsByScrumMaster(String fName, String lName) {
+        return projetRepository.findAllByUserRoleAndUserFnameAndUserLname(Role.SCRUM_MASTER,fName,lName);
     }
 }
